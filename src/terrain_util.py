@@ -2,7 +2,7 @@
 """
 Created on Wed Jun  5 10:52:22 2024
 
-@author: Avalanche
+@author: Ron Simenhois
 """
 import os
 from glob import glob
@@ -355,20 +355,31 @@ def get_slope_attributes(dem_path, *args):
 
     """
     
-    dem = rd.LoadGDAL(dem_path)
-    dem = rd.FillDepressions(dem, epsilon=False, in_place=False)
+    gdal.UseExceptions()
+    attributes = {'richdem': ['slope_riserun', 'slope_percentage', 'slope_degrees', 'slope_radians',
+                              'aspect', 'curvature', 'planform_curvature', 'profile_curvature'],
+                  'gdal': ['hillshade', 'slope', 'aspect', 'color-relief', 'TRI', 'TPI', 'Roughness']}
 
     attr_arrays = {}
     for attr in args:
         name = os.path.split(dem_path   )[1]
         name = name[:name.rfind(' ')] + f' {attr}'
         try:
-            attr_band = rd.TerrainAttribute(dem, attrib=attr)
-            attr_arrays[name] = attr_band
+            if attr in attributes['richdem']:
+                dem = rd.LoadGDAL(dem_path)
+                dem = rd.FillDepressions(dem, epsilon=False, in_place=False)
+                attr_band = rd.TerrainAttribute(dem, attrib=attr)
+            else:
+                out_path = dem_path.replace('.tif', f'_{attr}.tif')
+                #open(out_path, 'a').close() # Otherwise, DEMPsocessing will raise a RuntimeError: pszColorFilename == NULL.
+                ds = gdal.Open(dem_path)
+                attr_df = gdal.DEMProcessing(out_path, ds, attr, computeEdges=True)
+                attr_band = attr_df.GetRasterBand(1).ReadAsArray()
+            attr_arrays[name] = attr_band    
         except Exception as e:
             print(e)
     return attr_arrays
-    
+
 
 def plot_attr_vals_probability(attr, title, **paths):
     """
