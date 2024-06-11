@@ -227,29 +227,30 @@ def crop_tif(in_path,
              minx=None, maxx=None,
              miny=None, maxy=None):
     """
-    
+    This function crope a GeoTif to a shp, kml file polygons or a bounding box
 
     Parameters
     ----------
-    in_path : TYPE
-        DESCRIPTION.
-    out_path : TYPE
-        DESCRIPTION.
-    polygon_path : TYPE, optional
-        DESCRIPTION. The default is None.
-    minx : TYPE, optional
-        DESCRIPTION. The default is None.
-    maxx : TYPE, optional
-        DESCRIPTION. The default is None.
-    miny : TYPE, optional
-        DESCRIPTION. The default is None.
-    maxy : TYPE, optional
-        DESCRIPTION. The default is None.
+    in_path : str
+        path to the original tif file.
+    out_path : str
+        path to save the croped tif.
+    polygon_path : str, optional
+        path to the shp, kml file. The default is None. It needs to have str 
+        value if the bounding box is None
+    minx : float, optional
+        The bounding box cordinate. The default is None.
+    maxx : float, optional
+        The bounding box cordinate. The default is None.
+    miny : float, optional
+        The bounding box cordinate. The default is None.
+    maxy : float, optional
+        The bounding box cordinate. The default is None.
 
     Returns
     -------
-    dem : TYPE
-        DESCRIPTION.
+    dem : numpy array
+        The croped tif raster band 1 as numpy array.
 
     """
     
@@ -270,16 +271,16 @@ def crop_tif(in_path,
 
 def show_array(a, cmap='winter', title=''):
     """
-    
+    Display a 2D array as an image
 
     Parameters
     ----------
-    a : TYPE
-        DESCRIPTION.
-    cmap : TYPE, optional
-        DESCRIPTION. The default is 'winter'.
-    title : TYPE, optional
-        DESCRIPTION. The default is ''.
+    a : 2D numpy array
+        The data array to display.
+   cmap : str, optional
+       A color map. The default is 'winter_r'.
+   title : str, optional
+       The plot title. The default is ''.
 
     Returns
     -------
@@ -295,18 +296,18 @@ def show_array(a, cmap='winter', title=''):
     
 def plot_3d(arr, cmap='winter_r', title='', **kwargs):
     """
-    
+    This fuction generate a 3D plot from a 2D array
 
     Parameters
     ----------
-    arr : TYPE
-        DESCRIPTION.
-    cmap : TYPE, optional
-        DESCRIPTION. The default is 'winter_r'.
-    title : TYPE, optional
-        DESCRIPTION. The default is ''.
-    **kwargs : TYPE
-        DESCRIPTION.
+    arr : 2D Numpy array
+        A 2D array contain the data to polot.
+    cmap : str, optional
+        A color map. The default is 'winter_r'.
+    title : str, optional
+        The plot title. The default is ''.
+    **kwargs : dict
+        Azimuth ans elevation view to set the plot initial view.
 
     Returns
     -------
@@ -379,24 +380,28 @@ def get_slope_attributes(dem_path, *args):
         except Exception as e:
             print(e)
     return attr_arrays
-
+    
 
 def plot_attr_vals_probability(attr, title, **paths):
     """
-    
+    This function plots a probability histogram and the corresponding 
+    Kernel Density Estimators (kde) of the different values in a 2D array. 
 
     Parameters
     ----------
-    attr : TYPE
-        DESCRIPTION.
-    title : TYPE
-        DESCRIPTION.
-    **paths : TYPE
-        DESCRIPTION.
+    attr : str
+        Slope attribute, can be "aspect" "slope angle" "roughness"...
+    title : str
+        plot title.
+    **paths : dict
+        A dictionary where the values are the 2D arrays and the keys are 
+        the array descriptions.
 
     Returns
     -------
-    None.
+    kurtosis_d : dict
+        A dictionary with keys as the kurtosis of each array's values 
+        distribution and keys as the descriptions of the distributions
 
     """
        
@@ -444,18 +449,3 @@ def plot_attr_vals_probability(attr, title, **paths):
     
     return kurtosis_d    
 
-
-
-
-
-if __name__ == '__main__':
-    
-    cmaps = {
-                'deafult': 'winter',
-                'slope_degrees': 'magma_r',
-                'slope_riserun': 'magma_r', 
-                'slope_percentage': 'magma_r', 
-                'slope_degrees': 'magma_r', 
-                'slope_radians': 'magma_r',
-                'aspect': 'twilight_shifted',
-                }
